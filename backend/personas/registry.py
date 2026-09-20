@@ -1,7 +1,6 @@
 """The curated persona registry.
 
-This is the app's core safety guardrail (see REQUIREMENTS.md's "Non-goals":
-no freeform custom personas). Every persona below is a generic archetype --
+This is the app's core safety guardrail. Every persona below is a generic archetype --
 never a real, identifiable living (or dead) person -- and every voice_style
 sticks to personality/speech quirks, not protected-class stereotypes. The
 API only ever accepts these keys; anything else is rejected before a single

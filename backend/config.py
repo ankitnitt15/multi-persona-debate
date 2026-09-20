@@ -1,8 +1,5 @@
 import os
 
-# A debate is a lot more expensive than a single fact-check call: 2 rounds x
-# (2-4 personas) + 1 optional moderator call = 5-9 Gemini calls per request.
-# Both caps below default lower than is-it-true's to reflect that.
 DAILY_USER_CAP = int(os.getenv("DAILY_USER_CAP", "3"))
 GLOBAL_DAILY_CALL_CAP = int(os.getenv("GLOBAL_DAILY_CALL_CAP", "300"))
 
