@@ -40,9 +40,6 @@ def admin_stats(x_admin_token: str = Header(default="")):
 
 @router.get("/personas", response_model=list[PersonaOut])
 def list_personas():
-    """The full curated registry -- the frontend's persona picker is built
-    entirely from this, so there is never a UI path that lets a user type in
-    a freeform persona name."""
     return [
         PersonaOut(key=p.key, name=p.name, avatar=p.avatar, color=p.color, description=p.description)
         for p in all_personas()
@@ -106,8 +103,7 @@ def _stream_and_record(
     """Forwards each orchestrator event to the client as SSE, and once the
     final "done" event has been seen, performs the same rate-limit
     bookkeeping /debate does synchronously -- just triggered from consuming
-    the last event instead of a return value (same pattern as is-it-true's
-    /check/stream)."""
+    the last event instead of a return value"""
     for event in orchestrator.stream_debate_events(debate_id, topic, persona_keys, include_moderator, user_name):
         yield _sse_line(event)
 
@@ -139,7 +135,6 @@ def _validate(payload: DebateRequest) -> tuple[str, list[str], str]:
         )
     unknown = [key for key in persona_keys if not is_valid_persona_key(key)]
     if unknown:
-        # This is the hard requirement from REQUIREMENTS.md's Non-goals:
         # no freeform custom persona creation. Reject, don't silently drop.
         raise HTTPException(400, f"Unknown persona key(s): {', '.join(unknown)}. Choose from the curated list only.")
 

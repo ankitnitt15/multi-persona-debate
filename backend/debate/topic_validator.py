@@ -1,13 +1,7 @@
 """Pre-flight check that runs once per debate request, before any persona is
 spun up. Only catches text that isn't a debatable topic at all -- gibberish,
 greetings, single unrelated words. It deliberately does NOT try to gate on
-"this topic needs current information": an earlier version also rejected
-anything that looked time-sensitive, but that heuristic couldn't reliably
-tell "who will win tomorrow's match" (genuinely unknowable) apart from
-perfectly good opinion topics like "is [a real politician] a good leader",
-"should I buy an iPhone on my current salary", or "should I eat out today" --
-all of which got rejected. This is a lighthearted opinion-debate app, not a
-research tool, so err on the side of accepting.
+"this topic needs current information"
 """
 
 from pydantic import BaseModel
