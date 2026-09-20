@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = "https://multi-persona-debate.onrender.com";
 
 const MAX_CHARS = 300;
 const MIN_PERSONAS = 2;
