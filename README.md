@@ -41,15 +41,9 @@ two rounds plus an optional neutral moderator wrap-up. Entertainment only app no
 8. Each statement is revealed on-screen with a typewriter effect as its
    text arrives, so a persona's bubble visibly "speaks itself" onto the
    stage rather than popping in fully-formed.
+   
 
-**No debate cache.** Earlier versions cached identical (topic, personas,
-moderator) requests for an hour, but that's not a real use case here: two
-people essentially never type the exact same free-text topic, and a
-personalized name baked into every statement would make a stale cache hit
-actively *wrong* for anyone else re-running the same topic under a different
-name. Every request runs the full pipeline live.
-
-Everything is built with Pydantic models end-to-end (`debate/models.py`,
+Everything is built with Pydantic models (`debate/models.py`,
 `api/schemas.py`) and Gemini structured output (`response_schema=...`) 
 
 ## Safety guardrail
@@ -86,9 +80,7 @@ never as instructions to the model
 that is the moderator's wrap-up + winner declaration (on by default).**
 Rationale: round 2 rebuttals already require each persona to have seen
 everyone else's opening statement, which is where the real "debate" value
-comes from; a 3rd persona-vs-persona round (re-rebuttals) mostly repeats the
-same dynamic at higher cost/latency for limited extra entertainment value,
-so it was left out. The moderator step is a single extra call that gives a
+comes from; The moderator step is a single extra call that gives a
 satisfying sense of closure -- and, per user feedback, a genuine winner
 instead of a deliberately-neutral non-verdict -- so it defaults to on but is
 a per-request toggle (`include_moderator`, exposed as a checkbox in the UI).
@@ -110,7 +102,7 @@ and used consistently in every prompt, every rendered statement, and the
 moderator's roster/winner. Blank name is fine and just falls back to the
 plain archetype name.
 
-Total Gemini calls per debate: `1` (topic check) `+ personas * 2` (`+1` if
+Total LLM calls per debate: `1` (topic check) `+ personas * 2` (`+1` if
 moderator is on) -- e.g. 3 personas with the moderator on = 8 calls.
 
 **Safety guardrails on persona prompts.** Handled two ways: (1) structurally,
@@ -215,7 +207,7 @@ required to run them. Verified locally on Python 3.14.6.
 
 ## Admin stats (optional)
 
-`GET /api/admin/stats` mirrors `is-it-true`'s: returns today's global Gemini
+`GET /api/admin/stats` : returns today's global Gemini
 call count vs. cap, gated behind an `X-Admin-Token` header matching
 `ADMIN_TOKEN`. Returns `404` (not `401`) when `ADMIN_TOKEN` is unset, so the
 endpoint's existence isn't revealed by default.

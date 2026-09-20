@@ -1,5 +1,3 @@
-// Edit this before deploying -- there's no build step, so the backend URL is
-// just a constant. Point it at your Render/Fly.io backend's public URL.
 const API_BASE_URL = "http://localhost:8000";
 
 const MAX_CHARS = 300;
@@ -45,10 +43,6 @@ async function init() {
   }
 }
 
-// Deliberately built entirely from the curated list the backend returns --
-// there is no free-text field anywhere for a persona name. This is the
-// frontend half of the app's core safety guardrail (the backend enforces
-// the same thing again, independently, in api/routes.py).
 function renderPersonaPicker(personas) {
   personaPicker.innerHTML = "";
   for (const persona of personas) {
