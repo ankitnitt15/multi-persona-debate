@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Persona Debate</title>
+  <link rel="stylesheet" href="style.css?v=4" />
+</head>
+<body>
+  <div class="stage-lights" aria-hidden="true">
+    <span class="glow glow-1"></span>
+    <span class="glow glow-2"></span>
+    <span class="glow glow-3"></span>
+  </div>
+
+  <main class="page">
+    <header class="header">
+      <div class="stage-icon" aria-hidden="true">🎭</div>
+      <h1>Multi-Persona Debate</h1>
+      <p class="subtitle">You contain multitudes. Give a few of your inner voices a name, a motion, and a microphone -- then watch yourself argue it out.</p>
+    </header>
+
+    <section class="input-card">
+      <label class="field-label" for="name-input">Your name</label>
+      <input
+        id="name-input"
+        type="text"
+        placeholder="e.g. Tom"
+        maxlength="40"
+      />
+
+      <label class="field-label" for="topic-input">What should they argue about?</label>
+      <input
+        id="topic-input"
+        type="text"
+        placeholder="e.g. should we get a dog"
+        maxlength="300"
+      />
+      <div class="char-count-row">
+        <span id="char-count" class="char-count">0 / 300</span>
+      </div>
+
+      <label class="field-label">Cast your debaters (2-4)</label>
+      <div id="persona-picker" class="persona-picker">
+        <p class="persona-loading">Loading the cast...</p>
+      </div>
+
+      <label class="moderator-toggle">
+        <input id="moderator-checkbox" type="checkbox" checked />
+        Bring out a moderator to crown a winner at the end
+      </label>
+
+      <div class="input-row">
+        <span id="selection-hint" class="selection-hint">Select 2-4 personas to begin.</span>
+        <div class="input-row-actions">
+          <button id="clear-btn" type="button" class="ghost-btn">Clear</button>
+          <button id="debate-btn" type="button" class="primary-btn" disabled>Raise the curtain</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="status" class="status" hidden>
+      <span class="eq-bars" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+      <span id="status-text"></span>
+    </section>
+
+    <section id="transcript" class="transcript" hidden></section>
+
+    <footer class="footer">
+      <p>
+        Every statement is AI-generated role-play by a fixed, curated cast of archetypes --
+        never a real person -- for entertainment only. Nothing here is persisted once you leave the page.
+      </p>
+    </footer>
+  </main>
+
+  <script src="app.js?v=4"></script>
+</body>
+</html>

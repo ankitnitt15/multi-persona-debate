@@ -1,0 +1,555 @@
+:root {
+  --bg: #0b0e17;
+  --bg-raised: #141926;
+  --ink: #f1f3f9;
+  --ink-muted: #9aa3b8;
+  --amber: #f2b134;
+  --teal: #2dd4bf;
+  --magenta: #e879c8;
+  --card-border: rgba(255, 255, 255, 0.08);
+  --radius-lg: 20px;
+  --radius-md: 13px;
+}
+
+/* A single defensive rule: the [hidden] attribute must always win over any
+   class-based `display` declaration below, otherwise a class like `.status`
+   that sets `display: flex` for when it's shown silently overrides the
+   attribute the moment both are present -- which is what made the status
+   panel (and its equalizer bars) visible on first paint before anything
+   had actually started. */
+[hidden] {
+  display: none !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  overflow-x: hidden;
+}
+
+/* Slowly drifting stage-light glows, fixed behind everything, filling the
+   otherwise-empty margins around the narrow content column. Blurred and
+   dim enough to never fight with foreground text. */
+.stage-lights {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.glow {
+  position: absolute;
+  width: 46vmax;
+  height: 46vmax;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.28;
+}
+
+.glow-1 {
+  top: -18vmax;
+  left: -14vmax;
+  background: var(--amber);
+  animation: drift-a 26s ease-in-out infinite alternate;
+}
+
+.glow-2 {
+  bottom: -20vmax;
+  right: -12vmax;
+  background: var(--teal);
+  animation: drift-b 32s ease-in-out infinite alternate;
+}
+
+.glow-3 {
+  top: 30%;
+  right: -22vmax;
+  background: var(--magenta);
+  opacity: 0.18;
+  animation: drift-a 22s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes drift-a {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(6vmax, 4vmax) scale(1.15); }
+}
+
+@keyframes drift-b {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(-5vmax, -6vmax) scale(1.1); }
+}
+
+.page {
+  position: relative;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 16px 56px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 26px;
+}
+
+.stage-icon {
+  font-size: 2.1rem;
+  margin-bottom: 6px;
+  /* A single one-shot entrance, not a loop -- a continuously-pulsing icon
+     at the very top of the page reads as "still loading" even once
+     everything has finished loading, which is the exact bug this replaces. */
+  animation: icon-drop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes icon-drop {
+  from { opacity: 0; transform: translateY(-10px) scale(0.85); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.header h1 {
+  margin: 0 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2.3rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--amber);
+}
+
+.subtitle {
+  margin: 0 auto;
+  max-width: 460px;
+  color: var(--ink-muted);
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.input-card {
+  background: var(--bg-raised);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.field-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+  margin: 16px 0 8px;
+}
+
+.field-label:first-child {
+  margin-top: 0;
+}
+
+#name-input,
+#topic-input {
+  width: 100%;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #0e1220;
+  color: var(--ink);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#name-input::placeholder,
+#topic-input::placeholder {
+  color: #5b6478;
+}
+
+#name-input:focus,
+#topic-input:focus {
+  outline: none;
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px rgba(242, 177, 52, 0.18);
+}
+
+.char-count-row {
+  text-align: right;
+  margin-top: 4px;
+}
+
+.char-count {
+  font-size: 0.8rem;
+  color: #5b6478;
+}
+
+.persona-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.persona-loading {
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  grid-column: 1 / -1;
+}
+
+.persona-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: 14px 10px;
+  background: #0e1220;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--ink);
+  transition: border-color 0.15s ease, transform 0.12s ease, box-shadow 0.2s ease;
+}
+
+.persona-card:hover {
+  border-color: var(--persona-color, var(--amber));
+  transform: translateY(-2px);
+}
+
+.persona-card.selected {
+  border-width: 2.5px;
+  border-color: var(--persona-color, var(--amber));
+  background: color-mix(in srgb, var(--persona-color, var(--amber)) 26%, #0e1220);
+  box-shadow: 0 0 0 1px var(--persona-color, var(--amber)),
+    0 0 22px color-mix(in srgb, var(--persona-color, var(--amber)) 55%, transparent);
+  animation: spotlight-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes spotlight-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px var(--persona-color, var(--amber)), 0 0 14px color-mix(in srgb, var(--persona-color, var(--amber)) 45%, transparent); }
+  50% { box-shadow: 0 0 0 1px var(--persona-color, var(--amber)), 0 0 26px color-mix(in srgb, var(--persona-color, var(--amber)) 65%, transparent); }
+}
+
+/* A color-mixed background alone isn't reliably visible for every persona
+   color (a muted slate like the Pragmatist's barely shifts against the
+   dark card background) -- this checkmark badge is an unambiguous,
+   color-independent "yes, this one is selected" signal on top of it. */
+.persona-check {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--amber);
+  color: #1a1400;
+  font-size: 0.75rem;
+  font-weight: 900;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.15s ease, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.persona-card.selected .persona-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.persona-avatar {
+  font-size: 1.9rem;
+}
+
+.persona-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.persona-desc {
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  line-height: 1.3;
+}
+
+.moderator-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.input-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.selection-hint {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+button {
+  border: none;
+  border-radius: 999px;
+  padding: 11px 24px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.ghost-btn {
+  background: transparent;
+  color: var(--ink-muted);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  padding: 10px 18px;
+}
+
+.ghost-btn:hover {
+  color: var(--ink);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.primary-btn {
+  background: var(--amber);
+  color: #1a1400;
+  box-shadow: 0 4px 18px rgba(242, 177, 52, 0.4);
+}
+
+.primary-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(242, 177, 52, 0.55);
+}
+
+button:disabled {
+  background: #2a2f3d;
+  color: #6b7280;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.status {
+  margin-top: 20px;
+  text-align: center;
+  color: var(--ink-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.status.error {
+  color: #f97066;
+}
+
+.eq-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 16px;
+}
+
+.status.error .eq-bars {
+  display: none;
+}
+
+.eq-bars span {
+  width: 3px;
+  background: var(--amber);
+  border-radius: 2px;
+  animation: eq-bounce 0.9s ease-in-out infinite;
+}
+
+.eq-bars span:nth-child(1) { height: 40%; animation-delay: 0s; }
+.eq-bars span:nth-child(2) { height: 100%; animation-delay: 0.15s; }
+.eq-bars span:nth-child(3) { height: 65%; animation-delay: 0.3s; }
+.eq-bars span:nth-child(4) { height: 85%; animation-delay: 0.45s; }
+
+@keyframes eq-bounce {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+
+.transcript {
+  margin-top: 28px;
+}
+
+.round-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 26px 0 14px;
+  animation: reveal-pop 0.3s ease-out both;
+}
+
+.round-heading:first-child {
+  margin-top: 0;
+}
+
+.round-heading::before,
+.round-heading::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(242, 177, 52, 0.5), transparent);
+}
+
+.bubble {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: var(--bg-raised);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--card-border);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: step-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.moderator-bubble {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: linear-gradient(160deg, #171c2b, #12151f);
+}
+
+.bubble-avatar {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--persona-color, var(--amber)) 22%, #0e1220);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--persona-color, var(--amber)) 60%, transparent);
+}
+
+.bubble-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.bubble-name {
+  display: block;
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+  color: var(--persona-color, var(--ink));
+}
+
+.moderator-bubble .bubble-name {
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+}
+
+.bubble-text {
+  margin: 0;
+  font-size: 0.96rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.winner-banner {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-top: 16px;
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(242, 177, 52, 0.4);
+  background: linear-gradient(160deg, rgba(242, 177, 52, 0.16), rgba(242, 177, 52, 0.04));
+  box-shadow: 0 0 30px rgba(242, 177, 52, 0.15);
+  animation: step-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.winner-trophy {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 0 10px rgba(242, 177, 52, 0.6));
+}
+
+.winner-title {
+  display: block;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--amber);
+  margin-bottom: 4px;
+}
+
+.winner-reason {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+/* Typewriter cursor: appended after the partially-revealed text while a
+   statement is still streaming in, removed once the full text has landed. */
+.type-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 1px;
+  background: var(--persona-color, var(--amber));
+  vertical-align: -0.15em;
+  animation: cursor-blink 0.8s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.footer {
+  margin-top: 36px;
+  padding-top: 18px;
+  border-top: 1px solid var(--card-border);
+  text-align: left;
+  font-size: 0.78rem;
+  color: #5b6478;
+}
+
+@keyframes reveal-pop {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes step-up {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
